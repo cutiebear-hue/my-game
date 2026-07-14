@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confession</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .message {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .btn-true {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-true:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-true:active {
+            transform: translateY(0);
+        }
+
+        .btn-false {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-false:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-false:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f0f0f0;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            border-radius: 15px;
+            padding: 60px 80px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .popup-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .popup-message {
+            font-size: 48px;
+            color: #667eea;
+            font-weight: bold;
+            animation: popupText 0.6s ease-in-out;
+        }
+
+        @keyframes popupText {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .wink {
+            font-size: 60px;
+            margin-top: 20px;
+            animation: winkAnim 0.6s ease-in-out 0.3s both;
+        }
+
+        @keyframes winkAnim {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
+        }
+
+        .attempt-message {
+            font-size: 14px;
+            color: #999;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup" id="popup">
+        <div class="popup-message">I know 😏</div>
+        <div class="wink">😉</div>
+    </div>
+
+    <div class="container">
+        <div class="title">💌 Confession</div>
+        <div class="subtitle">Someone wants to tell you something...</div>
+        <div class="message">Are you dumb?</div>
+        
+        <div class="buttons">
+            <button class="btn-true" onclick="answerTrue()">True</button>
+            <button class="btn-false" onclick="answerFalse()" id="falseBtn">False</button>
+        </div>
+        
+        <div class="attempt-message" id="attemptMessage"></div>
+    </div>
+
+    <script>
+        let falseAttempts = 0;
+        const maxAttempts = 3;
+
+        function answerTrue() {
+            showPopup();
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        }
+
+        function answerFalse() {
+            falseAttempts++;
+            const falseBtn = document.getElementById('falseBtn');
+            const attemptMessage = document.getElementById('attemptMessage');
+
+            if (falseAttempts >= maxAttempts) {
+                falseBtn.disabled = true;
+                attemptMessage.textContent = "You can't click that anymore 😂";
+                attemptMessage.style.color = '#ff6b6b';
+            } else {
+                attemptMessage.textContent = `Nice try! (${falseAttempts}/${maxAttempts})`;
+                attemptMessage.style.color = '#667eea';
+                
+                // Shake effect
+                falseBtn.style.animation = 'none';
+                setTimeout(() => {
+                    falseBtn.style.animation = 'shake 0.5s';
+                }, 10);
+            }
+        }
+
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            const overlay = document.getElementById('popupOverlay');
+            popup.classList.add('show');
+            overlay.classList.add('show');
+        }
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
